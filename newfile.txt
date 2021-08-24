@@ -1,0 +1,6 @@
+1 india pakistan 2 aditya sandeep firoj habibi 2 1 1 2 4 w b 1 4 6 0 w r 1 4 w b 1 1 2 4 w r
+
+cd $dir && g++ $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt
+
+1 india pakistan 2 aditya sandeep firoj habibi 1 2 4 w b 1 2 6 w b 1 2 4 w b 1 2 2 2 2 w b
+1 india pakistan 2 aditya sandeep firoj habibi 4 e d e w w b 1 2 6 w b 1 2 e w w b 1 2 2 2 e d w b
