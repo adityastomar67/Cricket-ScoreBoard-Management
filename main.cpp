@@ -1,33 +1,41 @@
 /*                                                                          PBL
         Project -- Cricket ScoreBoard DisplayBoard of Two Playing Teams.
         
-            Project Members --
-                    Aditya Singh Tomar    - 0905IT191006   - Main Class and additional Functions and all Explanation Comments.
-                    Aishwarya Shrivastava - 0905IT191007   - Worked on Score Class and its Member Functions.
-                    Rashika Sharma        - 0905IT191047   - Worked on Functioning of Player Class and Members.
-                    Saloni Kushwah        - 0905IT191052   - Worked on Team Class Data and Member Functions.
-    
-            Terms for the Acronyms -- 
-                    (p) -- Player
-                    (t) -- Team
-                    (m) -- Maximum
-                    (n) -- Minimum
-                    (c) -- Count
-                    (N) -- Number
-                    (w) -- Win
+        Description -- 
+                Basically this Program Takes Names, Player Names, and Score of Individual Player of both the Teams
+                and Evaluate Every Common aspects of the Cricket ScoreBoard Sheet, and Show it on the Display, and Evaluates 
+                the Number of Sixes, Fours throughout the Match, Best Player from Both the Teams, Best avg. Over, And lastly
+                the Winning Teams Name followed by How Many Runs And Wickets they have Won. 
+                
+        Project Members --
+                Aditya Singh Tomar    - 0905IT191006   - Main Class and additional Functions and all Explanation Comments.
+                Aishwarya Shrivastava - 0905IT191007   - Worked on "Score" Class and its Member Functions.
+                Rashika Sharma        - 0905IT191047   - Worked on Functioning of "Player" Class and Members.
+                Saloni Kushwah        - 0905IT191052   - Worked on "Team" Class Data and Member Functions.
+
+        Terms for the Acronyms -- 
+                (p) -- Player
+                (t) -- Team
+                (m) -- Maximum
+                (n) -- Minimum
+                (c) -- Count
+                (N) -- Number
+                (w) -- Win
+
 */
 
-//TODO - Need to add a automatic date adding feature in future for Better Refereence of Sved Score Sheet.
+//TODO - Need to add a automatic date adding feature in future for Better Refereence of Saved Score Sheet.      //Done
 //TODO - Need to add (single Player showing functionality) for singl player choose.
-//TODO - To add a draw game funtionality.
-//TODO - Need to add the extra run showing in score sheet Functionality.
+//TODO - To add a draw game funtionality.                                                                       //Done
+//TODO - Need to add the extra run showing in score sheet Functionality.                                        //Done
+//TODO - To add extra Runs showing Functionality.
+//TODO - Check ManOfTheMatch Function (Not Working Properly).                                                   //Done
+//TODO - Best Inning Average functionality is yet to be added.                                                  //Done
+//TODO - Best Over Average functionality is yet to be added.                                                    //Done
 
 #include <iostream>      // For declares a set of functions for standard Input/Output.
-#include <fstream>       // To write information to (.txt)files, and read information from files.
 #include <cstring>       // Header file required for String functions.
-#include <cmath>         // To declares a set of functions to perform mathematical operations.
 #include <stdio.h>       // C-Language Library file for Standard Input Output.
-#include <cstdlib>       // C-Language Library file to defines several general purpose functions, including dynamic memory management
 #include <ctime>         // Header file declares a set of functions, macros and types to work with date and time.
 #include <iomanip>       // It defines the manipulator functions to edit the Output Screen.
 #include <thread>        // Manages a separate thread (class).
@@ -36,6 +44,7 @@
 
 #define pNAME 15   // Max Length of a Player's Name.
 #define tNAME 10   // Max Length of a Team's Name.
+#define nNAME 3    // Min Length of Any Name.
 #define mOVER 5    // Max Overs can set for a Match.
 #define mPLAYERS 5 // Max Players in a Team.
 #define mBALLS 30  // Max Number of Balls a Player can bat.
@@ -43,23 +52,24 @@
 using namespace std;
 
 //* Classes Declaration //
-class Player;     // Player Class having all the Functions for Players in the Game.
-class Team;       // Team Class inherited from Player Class having Functions for both Teams.
-class Score;      // Score Class inherited Team and indirectly from Player Class, Having all Score Management Functions.
-class saveOutput; // New class for Saving and Opening Data to and from a (.txt) File.
+class Player; // Player Class having all the Functions for Players in the Game.
+class Team;   // Team Class inherited from Player Class having Functions for both Teams.
+class Score;  // Score Class inherited Team and indirectly from Player Class, Having all Score Management Functions.
 
 //* Main Class Additional Functions Declaration //
-int toss();                              // Tossing Function for Randomly choosing a Team for Batting.
-int show(Score, Score, int);             // For showing Random details like total fours, sixes etc.
 string tWin(Score, Score);               // Returns the Name of Winning Team.
 string manOfTheMatch(Score, Score, int); // For Choosing the Man of the Match from both Teams.
+string time();                           //
 void welcomeScreen(Score);               // Greeting Screen with New Sheet, Load Sheet, Exit options.
 void scoreSheet(Score, Score, Score);    // Final Score Sheet call with options containing Save-(Y/N) and Exit.
 void outputScreen(int);                  // Output Screen skeleton for #WelcomeScreen, #optionN Functions and Others.
 void outputScreen(int, Score);           // Output Screen skeleton for Inning Head Template.
-void outputScreen(Score, Score);         // Output Screen skeleton for Final Score Sheet Display.
+void outputScreen(Score, Score, int);    // Output Screen skeleton for Final Score Sheet Display.
 void optionN(Score, int);                // Output skeleton of NO_OPTION in Final Sheet Display.f
-string time();
+void overAvg(Score, Score);              // For Getting the Best Over Average.
+void inningAvg(Score, Score, int);       // For Getting the Best Inning Average.
+int toss();                              // Tossing Function for Randomly choosing a Team for Batting.
+int show(Score, Score, int);             // For showing Random details like total fours, sixes etc.
 
 //* Class Definitions //
 class Player
@@ -70,7 +80,6 @@ protected:
     int pRun[mPLAYERS][mBALLS]; // Array with each Player's Number and Runs on Individual Balls.
     int pNumber;                // Number of Player.
     int NBalls;                 // Counter for Balls.
-    // int NmPlayer;               // Number of Max Players.
 
     /* Friend Members*/
     friend Team;
@@ -83,15 +92,14 @@ public:
     string show_pName(int, int); // For Printing Player's Name.
     void get_pName(int);         // Player NAme input Function.
     void get_pStatus(Score);     // For taking Player's Input, if he's Out, Bold or anything.
-    void show_pStatus(int);       // For Showing the Player's Status.
+    void show_pStatus(int);      // For Showing the Player's Status.
 };
 class Team : public Player
 {
 protected:
+    string tName; // Name of a Team.
     int mPlayer;  // Max Players of the Team.
     int tNum;     // Number of the Team.
-    string tName; // Name of a Team.
-    string name[mPLAYERS];
 
     /* Friend Members*/
     friend Player;
@@ -121,42 +129,29 @@ class Score : public Team
     int cTotal6;         // Total Number of Six's by Each Player.
 
     /* Friend Members*/
-    friend int toss(int, int);
     friend string tWin(Score, Score);
-    friend int show(Score, Score, int);
-    friend void outputScreen(Score, Score);
-    friend void outputScreen(int);
     friend string manOfTheMatch(Score, Score, int);
-
-    /* friend int welcomeScreen(int); 
-     friend void optionN(Score); */
+    friend void outputScreen2(Score, Score);
+    friend void outputScreen(Score, Score, int);
+    friend void scoreSheet(Score, Score, Score);
+    friend void outputScreen(int);
+    friend int toss(int, int);
+    friend int show(Score, Score, int);
+    friend void overAvg(Score, Score);
+    friend void inningAvg(Score, Score, int);
 
 public:
     Score();                                // Constructor Function Declaration.
     void new_sheet(Score);                  // Function to Start the Preogram.
-    void load_sheet(Score, bool);           // Function of opening a Saved Score Sheet.
-    int save_sheet(Score, Score);          // Function of Saving a Score Sheet
     void add_run(char, int, int, int, int); // Add Runs in Player account.
     void sixes();                           // To Count the Totals Sixes and Returns Count.
     void fours();                           // To Count the Totals Fours and Returns Count.
-    char runShow(int, int);                 //
+    char runShow(int, int);                 // For adding the Functionality to Final ScoreSheet, to Show Runs of Each Over.
     int m_over();                           // Max Over Function to change the Inning.
     int wicket();                           // Keeps Wicket info of the Player.
     int score_total(int);                   // Function call for Total Runs.
     int start_scoreboard(int, Score);       // Function Call where the Score Sheet Begins.
     int setExtra();                         // Adding extra Runs.
-};
-class saveOutput
-{
-private:
-    streambuf *outPut;
-    friend Score;
-
-public:
-    saveOutput(ofstream &file) : outPut{file.rdbuf()}
-    {
-        cout.rdbuf(outPut);
-    }
 };
 
 //* Main Function //
@@ -188,7 +183,6 @@ string Player ::show_pName(int x, int y)
     }
     else
     {
-
         if (y == 1)
         {
             for (int i = 0; i < x; i++)
@@ -210,7 +204,6 @@ string Player ::show_pName(int x, int y)
 }
 void Player ::get_pName(int x)
 {
-    // p_name[x];
     for (int i = 0; i < x; i++)
     {
         cout << "Player " << i + 1 << " : ";
@@ -219,6 +212,13 @@ void Player ::get_pName(int x)
         {
             cout << endl
                  << "The expected Name is too long." << endl
+                 << "Enter Again!!" << endl;
+            i--;
+        }
+        else if (p_name[i].length() < nNAME)
+        {
+            cout << endl
+                 << "The expected Name is too Short." << endl
                  << "Enter Again!!" << endl;
             i--;
         }
@@ -236,20 +236,12 @@ void Player ::get_pStatus(Score t)
             }
         }
     }
-    for (int x = 0; x < t.mPlayer; x++)
-    {
-        for (int z = 0; z < mBALLS; z++)
-        {
-            // cRu
-        }
-    }
 }
 void Player ::show_pStatus(int x)
 {
     if (x > pNumber)
     {
         cout << "##";
-        // return NULL; //! Need to make it stop returning an extra Zero.
     }
     else
     {
@@ -257,14 +249,13 @@ void Player ::show_pStatus(int x)
         {
             cout << "0";
         }
-        cout<< Nplayer[x - 1]; //* x = pNumber
+        cout << Nplayer[x - 1]; //? x = pNumber
     }
 }
 
 //* Team Class - Member Function Definition //
 Team ::Team()
 {
-    // NmPlayer = mPlayer;
 }
 string Team ::show_tName()
 {
@@ -283,25 +274,29 @@ void Team ::get_tName(int x)
              << "Enter Again!!" << endl;
         get_tName(x);
     }
+    else if (tName.length() < nNAME)
+    {
+        cout << endl
+             << "The expected Name is too Short." << endl
+             << "Enter Again!!" << endl;
+        get_tName(x);
+    }
     tNum = x;
 }
 int Team ::mPlayers()
 {
     int n;
     cin >> n;
-    while (n > mPLAYERS)
+    while (n > mPLAYERS || n <= 0)
     {
         cout << endl
-             << "Number of Players can't be Higher than " << mPLAYERS << "."
+             << "Number of Players can't be Higher then " << mPLAYERS << " or Less then or Equals to 0."
              << endl
              << "Enter again : ";
         cin >> n;
     }
     mPlayer = n;
-    // pNumber = n;
     return n;
-    // t1.show_pName(1, 2);
-    // t2.show_pName(mPlayer);
 }
 
 //* Score Class - Member Function Definition //
@@ -320,13 +315,11 @@ Score ::Score()
             cRuns[i][j] = -10;
         }
     }
-
-    // tScore = 0;
 };
 void Score ::new_sheet(Score alpha)
 {
     Score t1, t2;
-    int check1 = 0, check2 = 0;
+
     system("clear");
     cout << endl
          << setw(103) << "Welcome to New ScoreBoard" << endl;
@@ -352,9 +345,11 @@ void Score ::new_sheet(Score alpha)
     cout << " ----------------------------------------------------" << endl;
     t2.get_pName(t2.mPlayer);
     cout << endl
-         << "  Enter the Number Overs, You want in Match : ";
+         << "  Enter the Number of Overs, You want in Match : ";
     t1.m_over();
     t2.m_Over = t1.m_Over;
+
+    int check1 = 0, check2 = 0;
     do
     {
         switch (toss())
@@ -391,58 +386,31 @@ void Score ::new_sheet(Score alpha)
             break;
         }
     } while (check1 != 1 || check2 != 1);
+
     t1.get_pStatus(t1);
     t2.get_pStatus(t2);
+
     scoreSheet(alpha, t1, t2);
-}
-void Score ::load_sheet(Score alpha, bool yes)
-{
-    system("clear");
-    string matchSheet;
-    ifstream openFile;
-    openFile.open("ScoreSheetDisplay.txt");
-    while (openFile.eof() == 0)
-    {
-        getline(openFile, matchSheet);
-        cout << matchSheet << endl;
-    }
-    if (yes)
-    {
-        optionN(alpha, 2);
-    }
-}
-int Score ::save_sheet(Score t1, Score t2)
-{
-    bool saveChoice = false;
-    ofstream sheet("ScoreSheetDisplay.txt");
-    saveOutput savefile(sheet);
-    outputScreen(2);
-    return 0;
 }
 void Score ::add_run(char choice, int player, int ball, int cBall, int over)
 {
     switch (choice)
     {
     case '0':
-        pRun[player][ball] = 0;
-        cRuns[over][cBall] = 0;
+        pRun[player][ball] = cRuns[over][cBall] = 0;
         break;
     case '1':
-        pRun[player][ball] = 1;
-        cRuns[over][cBall] = 1;
+        pRun[player][ball] = cRuns[over][cBall] = 1;
         break;
     case '2':
-        pRun[player][ball] = 2;
-        cRuns[over][cBall] = 2;
+        pRun[player][ball] = cRuns[over][cBall] = 2;
         break;
     case '4':
-        pRun[player][ball] = 4;
-        cRuns[over][cBall] = 4;
+        pRun[player][ball] = cRuns[over][cBall] = 4;
         fours();
         break;
     case '6':
-        pRun[player][ball] = 6;
-        cRuns[over][cBall] = 6;
+        pRun[player][ball] = cRuns[over][cBall] = 6;
         sixes();
         break;
     case 'w':
@@ -511,18 +479,16 @@ int Score ::m_over()
 {
     int n;
     cin >> n;
-    while (n > mOVER)
+    while (n > mOVER || n <= 0)
     {
         cout << endl
-             << "Number of Overs can't be Higher than " << mOVER << "."
+             << "Number of Overs can't be Higher then " << mOVER << " or Less then or Equals to 0."
              << endl
              << "Enter again : ";
         cin >> n;
-        cout << endl;
-        cout << endl;
     }
     m_Over = n;
-    NBalls = n;
+    // NBalls = n;
     return n;
 }
 int Score ::wicket()
@@ -535,11 +501,20 @@ int Score ::wicket()
         cin >> localChoice;
         switch (localChoice)
         {
+        case 'B':
+            return -1;
+            break;
         case 'b':
             return -1;
             break;
+        case 'R':
+            return -2;
+            break;
         case 'r':
             return -2;
+            break;
+        case 'C':
+            return -3;
             break;
         case 'c':
             return -3;
@@ -588,12 +563,12 @@ int Score ::start_scoreboard(int inning, Score t)
         cout << endl
              << endl;
         system("clear");
-        this_thread::sleep_for(chrono::seconds(2));
+        // this_thread::sleep_for(chrono::seconds(2));
         cout << setw(74) << "Team " << show_tName() << " Wons the Toss!! and Choses to Bat." << endl;
         cout << setw(113.5) << "''''''''''''''''''''''''''''''''''''''''''''''" << endl
              << endl
              << endl;
-        this_thread::sleep_for(chrono::seconds(3));
+        // this_thread::sleep_for(chrono::seconds(3));
         system("clear");
         outputScreen(5);
         do
@@ -603,7 +578,7 @@ int Score ::start_scoreboard(int inning, Score t)
             outputScreen(1, t);
             if (Ball == 0)
             {
-                this_thread::sleep_for(chrono::seconds(2));
+                // this_thread::sleep_for(chrono::seconds(2));
                 cout << show_pName(1, 2);
                 cout << " and ";
                 cout << show_pName(2, 2);
@@ -638,12 +613,12 @@ int Score ::start_scoreboard(int inning, Score t)
         cout << endl
              << endl;
         system("clear");
-        this_thread::sleep_for(chrono::seconds(2));
-        cout << setw(96) << "II Inning" << endl;
+        // this_thread::sleep_for(chrono::seconds(2));
+        cout << setw(96) << "II - Inning" << endl;
         cout << setw(103) << "''''''''''''''''''''''''" << endl
              << endl
              << endl;
-        this_thread::sleep_for(chrono::seconds(3));
+        // this_thread::sleep_for(chrono::seconds(3));
         system("clear");
         outputScreen(5);
         do
@@ -653,7 +628,7 @@ int Score ::start_scoreboard(int inning, Score t)
             outputScreen(2, t);
             if (Ball == 0)
             {
-                this_thread::sleep_for(chrono::seconds(2));
+                // this_thread::sleep_for(chrono::seconds(2));
                 cout << show_pName(1, 2);
                 cout << " and ";
                 cout << show_pName(2, 2);
@@ -692,10 +667,20 @@ int Score ::setExtra()
     cin >> localChoice;
     switch (localChoice)
     {
+    case 'W':
+        return 1;
+        extra_run++;
+        wideBall++;
+        break;
     case 'w':
         return 1;
         extra_run++;
         wideBall++;
+        break;
+    case 'D':
+        return 2;
+        extra_run += 2;
+        dotBall++;
         break;
     case 'd':
         return 2;
@@ -709,8 +694,6 @@ int Score ::setExtra()
 //* Main Function's Definition //
 string tWin(Score t1, Score t2)
 {
-    // cout << t1.score_total() << endl
-    //      << t2.score_total() << endl;
     if (t1.score_total(0) > t2.score_total(0))
     {
         return t1.show_tName();
@@ -723,26 +706,26 @@ string tWin(Score t1, Score t2)
 string manOfTheMatch(Score t1, Score t2, int x)
 {
     string team1, team2;
-    for (int i = 1; i <= t1.mPlayer; i++)
+    for (int i = 1; i < t1.mPlayer; i++)
     {
-        if (t1.Nplayer[i] > t1.Nplayer[i + 1])
+        if (t1.Nplayer[i - 1] > t1.Nplayer[i])
         {
             team1 = t1.show_pName(i, 2);
         }
-        else if (t1.Nplayer[i] < t1.Nplayer[i + 1])
+        else if (t1.Nplayer[i - 1] < t1.Nplayer[i])
         {
             team1 = t1.show_pName(i + 1, 2);
         }
     }
-    for (int j = 1; j <= t2.mPlayer; j++)
+    for (int i = 1; i < t2.mPlayer; i++)
     {
-        if (t2.Nplayer[j] > t2.Nplayer[j + 1])
+        if (t2.Nplayer[i - 1] > t2.Nplayer[i])
         {
-            team2 = t2.show_pName(j, 2);
+            team2 = t2.show_pName(i, 2);
         }
-        else if (t2.Nplayer[j] < t2.Nplayer[j + 1])
+        else if (t2.Nplayer[i - 1] < t2.Nplayer[i])
         {
-            team2 = t2.show_pName(j + 1, 2);
+            team2 = t2.show_pName(i + 1, 2);
         }
     }
     if (x == 1)
@@ -753,6 +736,14 @@ string manOfTheMatch(Score t1, Score t2, int x)
     {
         return team2;
     }
+}
+string time()
+{
+    time_t tt;
+    struct tm *ti;
+    time(&tt);
+    ti = localtime(&tt);
+    return asctime(ti);
 }
 void welcomeScreen(Score alpha)
 {
@@ -785,7 +776,7 @@ void welcomeScreen(Score alpha)
                      << endl
                      << endl
                      << endl;
-                this_thread::sleep_for(chrono::milliseconds(500));
+                // this_thread::sleep_for(chrono::milliseconds(500));
                 // cout << setw(99) << "Creating New Game" << endl;
                 cout << setw(118) << "****************************************************" << endl
                      << setw(118) << "**                                                **" << endl
@@ -793,18 +784,13 @@ void welcomeScreen(Score alpha)
                      << setw(118) << "**                                                **" << endl
                      << setw(118) << "****************************************************" << endl
                      << endl;
-                this_thread::sleep_for(chrono::milliseconds(750));
+                // this_thread::sleep_for(chrono::milliseconds(750));
             }
 
             alpha.new_sheet(alpha);
             break;
         }
         else if (choice == '2')
-        {
-            alpha.load_sheet(alpha, true);
-            break;
-        }
-        else if (choice == '3')
         {
             system("clear");
             cout << endl
@@ -830,65 +816,61 @@ void welcomeScreen(Score alpha)
 }
 void scoreSheet(Score alpha, Score t1, Score t2)
 {
-    char choice;
-    bool saveChoice = true;
-    outputScreen(t1, t2);
-    outputScreen(3);
-    cout << setw(103) << "Enter Your Choice :";
-    do
+    if (t1.score_total(0) == t2.score_total(0))
     {
-        cin >> choice;
-        if (choice == 'Y' || choice == 'y')
+        char choice;
+        // bool saveChoice = true;
+        outputScreen(t1, t2, 2);
+        outputScreen(3);
+        cout << setw(103) << "Enter Your Choice :";
+        do
         {
-            if (saveChoice)
+            cin >> choice;
+            if (choice == 'N' || choice == 'n')
             {
-                alpha.save_sheet(t1, t2);
+                alpha.new_sheet(alpha);
             }
-            optionN(alpha, 1);
-        }
-        else if (choice == 'N' || choice == 'n')
-        {
-            optionN(alpha, 1);
-        }
-        else if (choice == 'E' || choice == 'e')
-        {
-            system("clear");
-            // system("exit");  //? Doesn't Work. Why?
-        }
-        else
-        {
-            outputScreen(t1, t2);
-            outputScreen(3);
-            cout << setw(105) << "The Choice is Wrong!!" << endl
-                 << setw(100) << "Enter Again :";
-        }
-    } while (choice != 'Y' && choice != 'y' && choice != 'N' && choice != 'n' && choice != 'E' && choice != 'e');
-}
-void outputScreen(int choice, Score t)
-{
-    switch (choice)
+            else if (choice == 'E' || choice == 'e')
+            {
+                system("clear");
+                // system("exit");  //? Doesn't Work. Why?
+            }
+            else
+            {
+                outputScreen(t1, t2, 2);
+                outputScreen(3);
+                cout << setw(105) << "The Choice is Wrong!!" << endl
+                     << setw(100) << "Enter Again :";
+            }
+        } while (choice != 'N' && choice != 'n' && choice != 'E' && choice != 'e');
+    }
+    else
     {
-    case 1:
-        cout << setw(97.5) << "---------------" << endl;
-        cout << setw(95) << "I'st INNING" << endl;
-        cout << setw(97.5) << "---------------" << endl
-             << endl;
-        cout << setw(80) << "Team " << t.show_tName() << " is on the Field to Bat." << endl;
-        cout << setw(108) << "''''''''''''''''''''''''''''''''''" << endl
-             << endl
-             << endl;
-        break;
-
-    case 2:
-        cout << setw(97) << "----------------" << endl;
-        cout << setw(95) << "II'st INNING" << endl;
-        cout << setw(97) << "----------------" << endl
-             << endl;
-        cout << setw(83.5) << "Team " << t.show_tName() << " will Bat now." << endl;
-        cout << setw(102) << "''''''''''''''''''''''''''" << endl
-             << endl
-             << endl;
-        break;
+        char choice;
+        // bool saveChoice = true;
+        outputScreen(t1, t2, 1);
+        outputScreen(3);
+        cout << setw(103) << "Enter Your Choice :";
+        do
+        {
+            cin >> choice;
+            if (choice == 'N' || choice == 'n')
+            {
+                alpha.new_sheet(alpha);
+            }
+            else if (choice == 'E' || choice == 'e')
+            {
+                system("clear");
+                // system("exit");  //? Doesn't Work. Why?
+            }
+            else
+            {
+                outputScreen(t1, t2, 1);
+                outputScreen(3);
+                cout << setw(105) << "The Choice is Wrong!!" << endl
+                     << setw(100) << "Enter Again :";
+            }
+        } while (choice != 'N' && choice != 'n' && choice != 'E' && choice != 'e');
     }
 }
 void outputScreen(int choice)
@@ -908,44 +890,42 @@ void outputScreen(int choice)
              << endl
              << endl
              << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ########################################################################################################################################################" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                      Welcome                                                                       ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                  Choose an Option                                                                  ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                 1. New ScoreBoard                                                                  ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
-        cout << "               ##                                                                 2. Open Saved ScoreBoard                                                           ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
-        cout << "               ##                                                                 3. Exit                                                                            ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
+        cout << "               ##                                                                 2. Exit                                                                            ##" << endl;
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(150));
+        // this_thread::sleep_for(chrono::milliseconds(150));
         cout << "               ########################################################################################################################################################" << endl
              << endl;
-        this_thread::sleep_for(chrono::seconds(2));
+        // this_thread::sleep_for(chrono::seconds(2));
         cout << setw(102) << "Enter Your Choice : ";
 
         break;
@@ -965,8 +945,7 @@ void outputScreen(int choice)
              << "               ##                                                                                                                                                    ##" << endl
              << "               ##                                                                                                                                                    ##" << endl
              << "               ##                                                                 1. New ScoreBoard                                                                  ##" << endl
-             << "               ##                                                                 2. Open Saved ScoreBoard                                                           ##" << endl
-             << "               ##                                                                 3. Exit                                                                            ##" << endl
+             << "               ##                                                                 2. Exit                                                                            ##" << endl
              << "               ##                                                                                                                                                    ##" << endl
              << "               ##                                                                                                                                                    ##" << endl
              << "               ##                                                                                                                                                    ##" << endl
@@ -996,7 +975,7 @@ void outputScreen(int choice)
         break;
     case 3:
         cout << "       |                                                                                                                                                                             |" << endl
-             << "       |                                                                     Do You Want To Save This Game? (Y/N)                                                                    |" << endl
+             << "       |                                                                                 New Game(N)                                                                                 |" << endl
              << "       |                                                                                   Exit(E)                                                                                   |" << endl
              << "       |                                                                                                                                                                             |" << endl
              << "       -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl
@@ -1016,37 +995,37 @@ void outputScreen(int choice)
         cout << endl
              << endl
              << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ########################################################################################################################################################" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                      ACRONYMS                                                                      ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                     0  -  Zero                                                                     ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                     1  -  Single                                                                   ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                     2  -  Double                                                                   ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                     4  -  Four                                                                     ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                     6  -  Six                                                                      ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                     W  -  Wicket                                                                   ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                     E  -  Extra                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                              NOTE : Enter Runs By Giving Space Between Them Until Wicket.                                          ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ##                                                                                                                                                    ##" << endl;
-        this_thread::sleep_for(chrono::milliseconds(100));
+        // this_thread::sleep_for(chrono::milliseconds(100));
         cout << "               ########################################################################################################################################################" << endl;
-        this_thread::sleep_for(chrono::seconds(1));
+        // this_thread::sleep_for(chrono::seconds(1));
         cout << endl
              << endl;
         break;
@@ -1101,55 +1080,191 @@ void outputScreen(int choice)
         break;
     }
 }
-void outputScreen(Score t1, Score t2)
+void outputScreen(int choice, Score t)
 {
-    system("clear");
-    cout << endl
-         << endl
-         << "       _______________________________________________________________________________________________________________________________________________________________________________" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |                                                                             SCORE DISPLAY BOARD                                                                             |" << endl
-         << "       |                                                                            '''''''''''''''''''''                                                                            |" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |                                                 TEAM " << t1.show_tName() << "                                   Vs                                    TEAM " << t2.show_tName() << "                                   |" << endl
-         << "       |                                                ''''''''''                                                                       ''''''''''                                  |" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |  Over 01  |        " << t1.runShow(1, 1) << "            " << t1.runShow(2, 1) << "          " << t1.runShow(3, 1) << "            " << t1.runShow(4, 1) << "           " << t1.runShow(5, 1) << "           " << t1.runShow(6, 1) << "          |        " << t2.runShow(1, 1) << "            " << t2.runShow(2, 1) << "          " << t2.runShow(3, 1) << "            " << t2.runShow(4, 1) << "           " << t2.runShow(5, 1) << "           " << t2.runShow(6, 1) << "          |" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |  Over 02  |        " << t1.runShow(1, 2) << "            " << t1.runShow(2, 2) << "          " << t1.runShow(3, 2) << "            " << t1.runShow(4, 2) << "           " << t1.runShow(5, 2) << "           " << t1.runShow(6, 2) << "          |        " << t2.runShow(1, 2) << "            " << t2.runShow(2, 2) << "          " << t2.runShow(3, 2) << "            " << t2.runShow(4, 2) << "           " << t2.runShow(5, 2) << "           " << t2.runShow(6, 2) << "          |" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |  Over 03  |        " << t1.runShow(1, 3) << "            " << t1.runShow(2, 3) << "          " << t1.runShow(3, 3) << "            " << t1.runShow(4, 3) << "           " << t1.runShow(5, 3) << "           " << t1.runShow(6, 3) << "          |        " << t2.runShow(1, 3) << "            " << t2.runShow(2, 3) << "          " << t2.runShow(3, 3) << "            " << t2.runShow(4, 3) << "           " << t2.runShow(5, 3) << "           " << t2.runShow(6, 3) << "          |" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |  Over 04  |        " << t1.runShow(1, 4) << "            " << t1.runShow(2, 4) << "          " << t1.runShow(3, 4) << "            " << t1.runShow(4, 4) << "           " << t1.runShow(5, 4) << "           " << t1.runShow(6, 4) << "          |        " << t2.runShow(1, 4) << "            " << t2.runShow(2, 4) << "          " << t2.runShow(3, 4) << "            " << t2.runShow(4, 4) << "           " << t2.runShow(5, 4) << "           " << t2.runShow(6, 4) << "          |" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |  Over 05  |        " << t1.runShow(1, 5) << "            " << t1.runShow(2, 5) << "          " << t1.runShow(3, 5) << "            " << t1.runShow(4, 5) << "           " << t1.runShow(5, 5) << "           " << t1.runShow(6, 5) << "          |        " << t2.runShow(1, 5) << "            " << t2.runShow(2, 5) << "          " << t2.runShow(3, 5) << "            " << t2.runShow(4, 5) << "           " << t2.runShow(5, 5) << "           " << t2.runShow(6, 5) << "          |" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |    TOTAL  |                                                                                |                                                                                |" << endl
-         << "       |    RUNS   |          " << t1.show_pName(1, 2) << "           " << t1.show_pName(2, 2) << "           " << t1.show_pName(3, 2) << "           " << t1.show_pName(4, 2) << "           " << t1.show_pName(5, 2) << "           |          " << t2.show_pName(1, 2) << "           " << t2.show_pName(2, 2) << "           " << t2.show_pName(3, 2) << "           " << t2.show_pName(4, 2) << "           " << t2.show_pName(5, 2) << "           |" << endl
-         << "       |     BY    |                                                                                |                                                                                |" << endl
-         << "       |    EACH   |           "; t1.show_pStatus(1);cout << "            "; t1.show_pStatus(2); cout << "            ";t1.show_pStatus(3);cout << "            " ; t1.show_pStatus(4);cout << "            " ;t1.show_pStatus(5);cout << "           |           "; t2.show_pStatus(1) ;cout<< "            "; t2.show_pStatus(2) ;cout<< "            "; t2.show_pStatus(3);cout << "            " ; t2.show_pStatus(4);cout << "            " ; t2.show_pStatus(5) ;cout<< "           |" << endl
-         << "       |   PLAYER  |                                                                                |                                                                                |" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |_____________________________________________________________________________________________________________________________________________________________________________|" << endl
-         << "       |           |                                                                                |                                                                                |" << endl
-         << "       |   TOTAL   |                                    " << t1.score_total(1) << " / " << t1.m_out << "                                     |                                    " << t2.score_total(1) << " / " << t2.m_out << "                                     |" << endl
-         << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |                                                                Team " << tWin(t1, t2) << " Won the Match By " << show(t1, t2, 1) << " Runs, " << show(t1, t2, 2) << " Wickets.                                                                |" << endl
-         << "       |                                                               '''''''''''''''''''''''''''''''''''''''''''''''                                                               |" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |                    TOTAL SIXES :" << show(t1, t2, 6) << "                                            TOTAL FOURS :" << show(t1, t2, 4) << "                                        BEST INNING AVG. :#                    |" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |                                  BEST OVER AVG. :#                                                                     MAN OF THE MATCH : " << manOfTheMatch(t1, t2, 1) << ", " << manOfTheMatch(t1, t2, 2) << "                          |" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |                                                                                                                                                                             |" << endl
-         << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl;
+    switch (choice)
+    {
+    case 1:
+        cout << setw(97.5) << "----------------" << endl;
+        cout << setw(94) << "I - INNING" << endl;
+        cout << setw(97.5) << "----------------" << endl
+             << endl;
+        cout << setw(80) << "Team " << t.show_tName() << " is on the Field to Bat." << endl;
+        cout << setw(108) << "''''''''''''''''''''''''''''''''''" << endl
+             << endl
+             << endl;
+        break;
+
+    case 2:
+        cout << setw(97) << "----------------" << endl;
+        cout << setw(95) << "II - INNING" << endl;
+        cout << setw(97) << "----------------" << endl
+             << endl;
+        cout << setw(83.5) << "Team " << t.show_tName() << " will Bat now." << endl;
+        cout << setw(102) << "''''''''''''''''''''''''''" << endl
+             << endl
+             << endl;
+        break;
+    }
+}
+void outputScreen(Score t1, Score t2, int x)
+{
+    switch (x)
+    {
+    case 1:
+        system("clear");
+        cout << endl
+             << endl
+             << setw(181) << time()
+             << "       _______________________________________________________________________________________________________________________________________________________________________________" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                             SCORE DISPLAY BOARD                                                                             |" << endl
+             << "       |                                                                            '''''''''''''''''''''                                                                            |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                 TEAM " << t1.show_tName() << "                                   Vs                                    TEAM " << t2.show_tName() << "                                   |" << endl
+             << "       |                                                ''''''''''                                                                       ''''''''''                                  |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 01  |        " << t1.runShow(1, 1) << "            " << t1.runShow(2, 1) << "          " << t1.runShow(3, 1) << "            " << t1.runShow(4, 1) << "           " << t1.runShow(5, 1) << "           " << t1.runShow(6, 1) << "          |        " << t2.runShow(1, 1) << "            " << t2.runShow(2, 1) << "          " << t2.runShow(3, 1) << "            " << t2.runShow(4, 1) << "           " << t2.runShow(5, 1) << "           " << t2.runShow(6, 1) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 02  |        " << t1.runShow(1, 2) << "            " << t1.runShow(2, 2) << "          " << t1.runShow(3, 2) << "            " << t1.runShow(4, 2) << "           " << t1.runShow(5, 2) << "           " << t1.runShow(6, 2) << "          |        " << t2.runShow(1, 2) << "            " << t2.runShow(2, 2) << "          " << t2.runShow(3, 2) << "            " << t2.runShow(4, 2) << "           " << t2.runShow(5, 2) << "           " << t2.runShow(6, 2) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 03  |        " << t1.runShow(1, 3) << "            " << t1.runShow(2, 3) << "          " << t1.runShow(3, 3) << "            " << t1.runShow(4, 3) << "           " << t1.runShow(5, 3) << "           " << t1.runShow(6, 3) << "          |        " << t2.runShow(1, 3) << "            " << t2.runShow(2, 3) << "          " << t2.runShow(3, 3) << "            " << t2.runShow(4, 3) << "           " << t2.runShow(5, 3) << "           " << t2.runShow(6, 3) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 04  |        " << t1.runShow(1, 4) << "            " << t1.runShow(2, 4) << "          " << t1.runShow(3, 4) << "            " << t1.runShow(4, 4) << "           " << t1.runShow(5, 4) << "           " << t1.runShow(6, 4) << "          |        " << t2.runShow(1, 4) << "            " << t2.runShow(2, 4) << "          " << t2.runShow(3, 4) << "            " << t2.runShow(4, 4) << "           " << t2.runShow(5, 4) << "           " << t2.runShow(6, 4) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 05  |        " << t1.runShow(1, 5) << "            " << t1.runShow(2, 5) << "          " << t1.runShow(3, 5) << "            " << t1.runShow(4, 5) << "           " << t1.runShow(5, 5) << "           " << t1.runShow(6, 5) << "          |        " << t2.runShow(1, 5) << "            " << t2.runShow(2, 5) << "          " << t2.runShow(3, 5) << "            " << t2.runShow(4, 5) << "           " << t2.runShow(5, 5) << "           " << t2.runShow(6, 5) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |    TOTAL  |                                                                                |                                                                                |" << endl
+             << "       |    RUNS   |          " << t1.show_pName(1, 2) << "           " << t1.show_pName(2, 2) << "           " << t1.show_pName(3, 2) << "           " << t1.show_pName(4, 2) << "           " << t1.show_pName(5, 2) << "           |          " << t2.show_pName(1, 2) << "           " << t2.show_pName(2, 2) << "           " << t2.show_pName(3, 2) << "           " << t2.show_pName(4, 2) << "           " << t2.show_pName(5, 2) << "           |" << endl
+             << "       |     BY    |                                                                                |                                                                                |" << endl
+             << "       |    EACH   |           ";
+        t1.show_pStatus(1);
+        cout << "            ";
+        t1.show_pStatus(2);
+        cout << "            ";
+        t1.show_pStatus(3);
+        cout << "            ";
+        t1.show_pStatus(4);
+        cout << "            ";
+        t1.show_pStatus(5);
+        cout << "           |           ";
+        t2.show_pStatus(1);
+        cout << "            ";
+        t2.show_pStatus(2);
+        cout << "            ";
+        t2.show_pStatus(3);
+        cout << "            ";
+        t2.show_pStatus(4);
+        cout << "            ";
+        t2.show_pStatus(5);
+        cout << "           |" << endl
+             << "       |   PLAYER  |                                                                                |                                                                                |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |_____________________________________________________________________________________________________________________________________________________________________________|" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |   TOTAL   |                                    " << t1.score_total(1) << " / " << t1.m_out << "                                     |                                    " << t2.score_total(1) << " / " << t2.m_out << "                                     |" << endl
+             << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                Team " << tWin(t1, t2) << " Won the Match By " << show(t1, t2, 1) << " Runs, " << show(t1, t2, 2) << " Wickets.                                                                |" << endl
+             << "       |                                                               '''''''''''''''''''''''''''''''''''''''''''''''                                                               |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                   TOTAL SIXES :" << show(t1, t2, 6) << "                                            TOTAL FOURS :" << show(t1, t2, 4) << "                                        BEST INNING AVG :";
+        inningAvg(t1, t2, 1);
+        cout << "              |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                 BEST OVER AVG :";
+        overAvg(t1, t2);
+        cout << "                                                                 MAN OF THE MATCH : " << manOfTheMatch(t1, t2, 1) << ", " << manOfTheMatch(t1, t2, 2) << "                          |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl;
+        // cout << t1.dotBall;
+        // cout << t1.wideBall;
+        // cout << t2.dotBall;
+        // cout << t2.wideBall;
+        // cout << endl;
+        break;
+    case 2: // for game draw
+        system("clear");
+        cout << endl
+             << endl
+             << setw(181) << time()
+             << "       _______________________________________________________________________________________________________________________________________________________________________________" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                             SCORE DISPLAY BOARD                                                                             |" << endl
+             << "       |                                                                            '''''''''''''''''''''                                                                            |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                 TEAM " << t1.show_tName() << "                                   Vs                                    TEAM " << t2.show_tName() << "                                   |" << endl
+             << "       |                                                ''''''''''                                                                       ''''''''''                                  |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 01  |        " << t1.runShow(1, 1) << "            " << t1.runShow(2, 1) << "          " << t1.runShow(3, 1) << "            " << t1.runShow(4, 1) << "           " << t1.runShow(5, 1) << "           " << t1.runShow(6, 1) << "          |        " << t2.runShow(1, 1) << "            " << t2.runShow(2, 1) << "          " << t2.runShow(3, 1) << "            " << t2.runShow(4, 1) << "           " << t2.runShow(5, 1) << "           " << t2.runShow(6, 1) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 02  |        " << t1.runShow(1, 2) << "            " << t1.runShow(2, 2) << "          " << t1.runShow(3, 2) << "            " << t1.runShow(4, 2) << "           " << t1.runShow(5, 2) << "           " << t1.runShow(6, 2) << "          |        " << t2.runShow(1, 2) << "            " << t2.runShow(2, 2) << "          " << t2.runShow(3, 2) << "            " << t2.runShow(4, 2) << "           " << t2.runShow(5, 2) << "           " << t2.runShow(6, 2) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 03  |        " << t1.runShow(1, 3) << "            " << t1.runShow(2, 3) << "          " << t1.runShow(3, 3) << "            " << t1.runShow(4, 3) << "           " << t1.runShow(5, 3) << "           " << t1.runShow(6, 3) << "          |        " << t2.runShow(1, 3) << "            " << t2.runShow(2, 3) << "          " << t2.runShow(3, 3) << "            " << t2.runShow(4, 3) << "           " << t2.runShow(5, 3) << "           " << t2.runShow(6, 3) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 04  |        " << t1.runShow(1, 4) << "            " << t1.runShow(2, 4) << "          " << t1.runShow(3, 4) << "            " << t1.runShow(4, 4) << "           " << t1.runShow(5, 4) << "           " << t1.runShow(6, 4) << "          |        " << t2.runShow(1, 4) << "            " << t2.runShow(2, 4) << "          " << t2.runShow(3, 4) << "            " << t2.runShow(4, 4) << "           " << t2.runShow(5, 4) << "           " << t2.runShow(6, 4) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |  Over 05  |        " << t1.runShow(1, 5) << "            " << t1.runShow(2, 5) << "          " << t1.runShow(3, 5) << "            " << t1.runShow(4, 5) << "           " << t1.runShow(5, 5) << "           " << t1.runShow(6, 5) << "          |        " << t2.runShow(1, 5) << "            " << t2.runShow(2, 5) << "          " << t2.runShow(3, 5) << "            " << t2.runShow(4, 5) << "           " << t2.runShow(5, 5) << "           " << t2.runShow(6, 5) << "          |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |    TOTAL  |                                                                                |                                                                                |" << endl
+             << "       |    RUNS   |          " << t1.show_pName(1, 2) << "           " << t1.show_pName(2, 2) << "           " << t1.show_pName(3, 2) << "           " << t1.show_pName(4, 2) << "           " << t1.show_pName(5, 2) << "           |          " << t2.show_pName(1, 2) << "           " << t2.show_pName(2, 2) << "           " << t2.show_pName(3, 2) << "           " << t2.show_pName(4, 2) << "           " << t2.show_pName(5, 2) << "           |" << endl
+             << "       |     BY    |                                                                                |                                                                                |" << endl
+             << "       |    EACH   |           ";
+        t1.show_pStatus(1);
+        cout << "            ";
+        t1.show_pStatus(2);
+        cout << "            ";
+        t1.show_pStatus(3);
+        cout << "            ";
+        t1.show_pStatus(4);
+        cout << "            ";
+        t1.show_pStatus(5);
+        cout << "           |           ";
+        t2.show_pStatus(1);
+        cout << "            ";
+        t2.show_pStatus(2);
+        cout << "            ";
+        t2.show_pStatus(3);
+        cout << "            ";
+        t2.show_pStatus(4);
+        cout << "            ";
+        t2.show_pStatus(5);
+        cout << "           |" << endl
+             << "       |   PLAYER  |                                                                                |                                                                                |" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |_____________________________________________________________________________________________________________________________________________________________________________|" << endl
+             << "       |           |                                                                                |                                                                                |" << endl
+             << "       |   TOTAL   |                                    " << t1.score_total(1) << " / " << t1.m_out << "                                     |                                    " << t2.score_total(1) << " / " << t2.m_out << "                                     |" << endl
+             << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                                  Game Draw.                                                                                 |" << endl
+             << "       |                                                               '''''''''''''''''''''''''''''''''''''''''''''''                                                               |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                   TOTAL SIXES :" << show(t1, t2, 6) << "                                            TOTAL FOURS :" << show(t1, t2, 4) << "                                        BEST INNING AVG :";
+        inningAvg(t1, t2, 2);
+        cout << ", (For Both)       |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                 BEST OVER AVG :";
+        overAvg(t1, t2);
+        cout << "                                                                    MAN OF THE MATCH : " << manOfTheMatch(t1, t2, 1) << ", " << manOfTheMatch(t1, t2, 2) << "                          |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |                                                                                                                                                                             |" << endl
+             << "       |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" << endl;
+        break;
+    }
 }
 void optionN(Score alpha, int choice)
 {
@@ -1201,7 +1316,7 @@ void optionN(Score alpha, int choice)
             else
             {
                 system("clear");
-                alpha.load_sheet(alpha, false);
+                // alpha.load_sheet(alpha, false);
                 outputScreen(4);
                 cout << setw(102) << "The Choice is Wrong!!" << endl
                      << setw(97) << "Enter Again :";
@@ -1211,12 +1326,105 @@ void optionN(Score alpha, int choice)
         break;
     }
 }
+void overAvg(Score t1, Score t2)
+{
+    int i, j, temp1, temp2, temp3, temp4, temp5;
+    float avg;
+    bool test = true;
+    temp1 = temp2 = temp3 = temp4 = temp5 = 0;
+
+    for (i = 0; i < t1.m_Over; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            // cout<<t1.cRuns[i][j];
+            if (t1.cRuns[i][j] > 0)
+            {
+                // t1.cRuns[i][j] += temp1;
+                temp1 += t1.cRuns[i][j];
+            }
+        }
+        temp2 = temp1 > temp2 ? temp1 : temp2;
+        temp1 = 0;
+    }
+    // temp1 = 0;
+    for (i = 0; i < t2.m_Over; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            if (t2.cRuns[i][j] > 0)
+            {
+                // t2.cRuns[i][j] += temp3;
+                temp3 += t2.cRuns[i][j];
+            }
+        }
+        temp4 = temp3 > temp4 ? temp3 : temp4;
+        temp3 = 0;
+    }
+    temp5 = temp2 > temp4 ? temp2 : temp4;
+    temp1 = temp2 = 0;
+    for (i = 0; i < t1.m_Over; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            temp1 += t1.cRuns[i][j];
+            if (temp5 == temp1 && test)
+            {
+                cout << i + 1 << " ,";
+                test = false;
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < t2.m_Over; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            temp2 += t2.cRuns[i][j];
+            if (temp5 == temp2 && test)
+            {
+                cout << i + 1 << " ,";
+                test = false;
+                break;
+            }
+        }
+    }
+    avg = (temp5 / 6.0);
+    if (avg < 10)
+    {
+        cout << "0";
+    }
+
+    cout << fixed << setprecision(1) << avg;
+}
+void inningAvg(Score t1, Score t2, int x)
+{
+    float run;
+    run = t1.score_total(0) > t2.score_total(0) ? t1.score_total(0) : t2.score_total(0);
+    run = run / t1.m_Over;
+    if (x == 1)
+    {
+        cout << tWin(t1, t2) << " ,";
+        if (run < 10)
+        {
+            cout << "0";
+        }
+        cout << fixed << setprecision(1) << run;
+    }
+    else
+    {
+        if (run < 10)
+        {
+            cout << "0";
+        }
+        cout << fixed << setprecision(1) << run;
+    }
+}
 int toss()
 {
     srand((unsigned)time(0));
     int randomNumber;
     randomNumber = (rand() % 10) + 1;
-    // cout<<randomNumber;
     if (randomNumber > 5)
     {
         return 2;
@@ -1273,12 +1481,4 @@ int show(Score t1, Score t2, int option)
         break;
     }
     return 0;
-}
-string time()
-{
-    time_t tt;
-    struct tm *ti;
-    time(&tt);
-    ti = localtime(&tt);
-    return asctime(ti);
 }

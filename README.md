@@ -1,1 +1,0 @@
-# Cricket-ScoreBoard-Management
